@@ -30,10 +30,18 @@ const Scriptures = (function () {
     let volumes = [];
 
     /*---------------------------------------------------------
+                    PRIVATE METHOD DECLARATIONS
+    ---------------------------------------------------------*/
+    
+    let ajax;
+    let cacheBooks;
+    let init;
+    
+    /*---------------------------------------------------------
                           PRIVATE METHODS
     ---------------------------------------------------------*/
 
-    function ajax(url, successCallback, failureCallback) {
+    ajax = function (url, successCallback, failureCallback) {
         let request = new XMLHttpRequest();
         request.open("GET", url, true);
 
@@ -55,9 +63,9 @@ const Scriptures = (function () {
         request.onerror = failureCallback;
 
         request.send();
-    }
+    };
 
-    function cacheBooks(callback) {
+    cacheBooks = function (callback) {
         volumes.forEach(function (volume) {
             let volumeBooks = [];
             let bookId = volume.minBookId;
@@ -73,41 +81,62 @@ const Scriptures = (function () {
         if (typeof callback === "function") {
             callback();
         }
+    };
+    
+    function goHome() {
+        let html = "<div>The Old Testament</div><div>The New Testament</div>";
+        document.getElementById("scriptures").innerHTML = html;
     }
+    
+    function onHashChanged() {
+        let ids = [];
+        let hash = window.location.hash;
+
+        if (hash !== "" && hash.length > 1) {
+            ids = hash.substring(1).split(":");
+        }
+
+        if (ids.length <= 0) {
+            goHome();
+        } else {
+
+        }
+    }
+    
+    init = function (callback) {
+        let booksLoaded = false;
+        let volumesLoaded = false;
+
+        ajax(
+            "http://scriptures.byu.edu/mapscrip/model/books.php",
+            function (data) {
+                books = data;
+                booksLoaded = true;
+
+                if (volumesLoaded) {
+                    cacheBooks(callback);
+                }
+            }
+        );
+        ajax(
+            "http://scriptures.byu.edu/mapscrip/model/volumes.php",
+            function (data) {
+                volumes = data;
+                volumesLoaded = true;
+
+                if (booksLoaded) {
+                    cacheBooks(callback);
+                }
+            }
+        );
+    };
 
     /*---------------------------------------------------------
                             PUBLIC API
     ---------------------------------------------------------*/
 
-    const api = {
-        init(callback) {
-            let booksLoaded = false;
-            let volumesLoaded = false;
-
-            ajax(
-                "http://scriptures.byu.edu/mapscrip/model/books.php",
-                function (data) {
-                    books = data;
-                    booksLoaded = true;
-
-                    if (volumesLoaded) {
-                        cacheBooks(callback);
-                    }
-                }
-            );
-            ajax(
-                "http://scriptures.byu.edu/mapscrip/model/volumes.php",
-                function (data) {
-                    volumes = data;
-                    volumesLoaded = true;
-
-                    if (booksLoaded) {
-                        cacheBooks(callback);
-                    }
-                }
-            );
-        }
+    return {
+        init: init
     };
-
-    return api;
+    
 }());

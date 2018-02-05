@@ -20,5 +20,21 @@
     <div id="header"><h1>Mapping the Scriptures</h1></div>
     <div id="scriptures"></div>
     <div id="map"></div>
+    <script type="text/javascript">
+    function ready(fn) {
+        if (document.attachEvent ? document.readyState === "complete" :
+                                   document.readyState !== "loading") {
+            fn();
+        } else {
+            document.addEventListener("DOMContentLoaded", fn);
+        }
+    }
+        
+    ready(function () {
+        Scriptures.init(function () {
+            Scriptures.onHashChanged();
+        });
+    });
+    </script>
 </body>
 </html>
