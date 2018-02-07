@@ -17,24 +17,49 @@
 </head>
     
 <body>
-    <div id="header"><h1>Mapping the Scriptures</h1></div>
-    <div id="scriptures"></div>
-    <div id="map"></div>
+    <div id="header">
+        <div id="crumb"></div>
+        <div id="centerhead">
+            <div id="title">Mapping the Scriptures</div>
+            <div id="subtitle">By Chris Pratt</div>
+        </div>
+    </div>
+    <div id="content">
+        <div id="scriptures"></div>
+        <div id="map"></div>
+    </div>
     <script type="text/javascript">
-    function ready(fn) {
+    function ready(eventHandler) {
         if (document.attachEvent ? document.readyState === "complete" :
                                    document.readyState !== "loading") {
-            fn();
+            eventHandler();
         } else {
-            document.addEventListener("DOMContentLoaded", fn);
+            document.addEventListener("DOMContentLoaded", eventHandler);
         }
     }
         
     ready(function () {
-        Scriptures.init(function () {
-            Scriptures.onHashChanged();
-        });
+        window.addEventListener("hashchange", Scriptures.onHashChange);
+        Scriptures.init(Scriptures.onHashChange);
     });
+        
+    let map;
+        
+    function initMap() {
+        let jerusalem = {lat: 31.7683, lng: 35.2137};
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 7,
+            center: jerusalem,
+            mapTypeId: 'hybrid'
+        });
+        let marker = new google.maps.Marker({
+            position: jerusalem,
+            map: map
+        });
+    }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAmVBL3bMN5o-wsRu3ZSFIoZGW27w6JXz4&callback=initMap">
     </script>
 </body>
 </html>
