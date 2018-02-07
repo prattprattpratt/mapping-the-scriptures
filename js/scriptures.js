@@ -37,6 +37,7 @@ const Scriptures = (function () {
 
     let books = {};
     let gmMarkers = [];
+    let nextprev;
     let requestedBreadcrumbs;
     let retryDelay = 500;
     let volumes = [];
@@ -71,10 +72,10 @@ const Scriptures = (function () {
 
     addMarker = function (placename, latitude, longitude) {
         let marker = new google.maps.Marker({
-            position: {lat: latitude, lng: longitude},
+            animation: google.maps.Animation.DROP,
             map: map,
-            title: placename,
-            animation: google.maps.Animation.DROP
+            position: {lat: latitude, lng: longitude},
+            title: placename
         });
         
         gmMarkers.push(marker);
@@ -132,15 +133,15 @@ const Scriptures = (function () {
             crumbs = "<ul><li><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash()\">The Scriptures</a></li>";
             
             if (book === undefined) {
-                crumbs += "<li>" + volume.fullName + "</li>";
+                crumbs += " > <li>" + volume.fullName + "</li>";
             } else {
-                crumbs += "<li><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(" + volume.id + ")\">" + volume.fullName + "</a></li>";
+                crumbs += " > <li><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(" + volume.id + ")\">" + volume.fullName + "</a></li>";
                 
                 if (chapter === undefined || chapter <= 0) {
-                    crumbs += "<li>" + book.tocName + "</li>";
+                    crumbs += " > <li>" + book.tocName + "</li>";
                 } else {
-                    crumbs += "<li><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + book.id + ")\">" + book.tocName + "</a></li>";
-                    crumbs += "<li>" + chapter + "</li>";
+                    crumbs += " > <li><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + book.id + ")\">" + book.tocName + "</a></li>";
+                    crumbs += " > <li>" + chapter + "</li>";
                 }
             }
         }
@@ -177,7 +178,10 @@ const Scriptures = (function () {
     getScriptureCallback = function (chapterHTML) {
         document.getElementById("scriptures").innerHTML = chapterHTML;
         document.getElementById("crumb").innerHTML = requestedBreadcrumbs;
-        setupMarkers();
+        document.getElementsByClassName("navheading")[0].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[1].innerHTML += nextprev;
+        
+        setupMarkers();        
     };
 
     getScriptureFailed = function () {
@@ -230,15 +234,22 @@ const Scriptures = (function () {
 
     goToChapter = function (bookId, chapter) {
         if (bookId !== undefined) {
-            console.log("Next chapter: " + nextChapter(bookId, chapter));
             let book = books[bookId];
-            let nextprev;
+            let nextChapterInfo = nextChapter(bookId, chapter);
+            let nextHTML = "";
+            let previousChapterInfo = previousChapter(bookId, chapter);
+            let previousHTML = "";
             let volume = volumes[book.parentBookId - 1];
-            
-            requestedBreadcrumbs = breadcrumbs(volume, book, chapter);
 
-            // TODO: Next/Previous navigation
-            nextprev = "<div class=\"nextprev\"><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, 102, 6)\" title=\"Exodus 6\"><i class=\"material-icons\">skip_previous</i></a><a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, 102, 8)\" title=\"Exodus 8\"><i class=\"material-icons\">skip_next</i></a></div>";
+            requestedBreadcrumbs = breadcrumbs(volume, book, chapter);
+            
+            if (previousChapterInfo) {
+                previousHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + previousChapterInfo[0] + ", " + previousChapterInfo[1] + ")\" title=\"" + previousChapterInfo[2] + "\"><i class=\"material-icons\">skip_previous</i></a>";
+            }
+            if (nextChapterInfo) {
+                nextHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + nextChapterInfo[0] + ", " + nextChapterInfo[1] + ")\" title=\"" + nextChapterInfo[2] + "\"><i class=\"material-icons\">skip_next</i></a>";
+            }
+            nextprev = "<div class=\"nextprev\">" + previousHTML + nextHTML + "</div>";
 
             ajax(urlParams(bookId, chapter), getScriptureCallback, getScriptureFailed, true);
         }
@@ -356,6 +367,30 @@ const Scriptures = (function () {
                 goToChapter(bookId, chapter);
             }
         }
+        
+        clearMarkers();
+    };
+
+    previousChapter = function (bookId, chapter) {
+        let book = books[bookId];
+        
+        if (book !== undefined) {
+            if (chapter > 1) {
+                return [bookId, chapter - 1, titleForBookChapter(book, chapter - 1)];
+            }
+            
+            let previousBook = books[bookId - 1];
+            
+            if (previousBook !== undefined) {
+                let previousChapterValue = 0;
+                
+                if (previousBook.numChapters > 0) {
+                    previousChapterValue = previousBook.numChapters;
+                }
+                
+                return [previousBook.id, previousChapterValue, titleForBookChapter(previousBook, previousChapterValue)];
+            }
+        }
     };
 
     setupMarkers = function () {
@@ -396,6 +431,13 @@ const Scriptures = (function () {
                 addMarker(placename, latitude, longitude);
             }
         });
+        
+        let bounds = new google.maps.LatLngBounds();
+        gmMarkers.forEach(function (marker) {
+            bounds.extend(marker.getPosition());
+        });
+        
+        map.fitBounds(bounds);
     };
 
     titleForBookChapter = function (book, chapter) {
