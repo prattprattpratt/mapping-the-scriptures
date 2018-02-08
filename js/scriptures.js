@@ -73,6 +73,11 @@ const Scriptures = (function () {
     addMarker = function (placename, latitude, longitude) {
         let marker = new google.maps.Marker({
             animation: google.maps.Animation.DROP,
+            label: {
+                fontFamily: "Raleway",
+                fontSize: "20px",
+                text: placename
+            },
             map: map,
             position: {lat: latitude, lng: longitude},
             title: placename
@@ -432,12 +437,17 @@ const Scriptures = (function () {
             }
         });
         
-        let bounds = new google.maps.LatLngBounds();
-        gmMarkers.forEach(function (marker) {
-            bounds.extend(marker.getPosition());
-        });
-        
-        map.fitBounds(bounds);
+        if (gmMarkers.length !== 0) {
+            let bounds = new google.maps.LatLngBounds();
+            gmMarkers.forEach(function (marker) {
+                bounds.extend(marker.getPosition());
+            });
+
+            map.fitBounds(bounds);
+            if (map.getZoom() > 15) {
+                map.setZoom(15);
+            }
+        }
     };
 
     titleForBookChapter = function (book, chapter) {

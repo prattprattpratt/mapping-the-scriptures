@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="css/styles.css?v=1.0">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Raleway:300" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Raleway:500" rel="stylesheet">
     
     <script src="js/scriptures.js" type="text/javascript"></script>
     <!--[if lt IE 9]>
@@ -46,13 +46,21 @@
         Scriptures.init(Scriptures.onHashChange);
     });
         
+    showLocation = function (geotagId, placename, latitude, longitude, viewLatitude, viewLongitude, viewTilt, viewRoll, viewAltitude, viewHeading) {
+        let place = {lat: latitude, lng: longitude};
+        map.setCenter(place);
+        map.setZoom(11);
+        console.log(map.getZoom());
+    };
+        
     let map;
+    let jerusalem = {lat: 31.7683, lng: 35.2137};
         
     function initMap() {
-        let jerusalem = {lat: 31.7683, lng: 35.2137};
         map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 7,
-            center: jerusalem
+            center: jerusalem,
+            mapTypeId: "terrain",
+            zoom: 9
         });
     }
     </script>

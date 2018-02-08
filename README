@@ -1,0 +1,10 @@
+Create a README that documents your learning experience and tells me what you've accomplished.  If you put your project on a web server, include the
+URL in your README.
+
+    The biggest struggle (and consequent learning experience) I had with this project was working with the Google Maps API. It's a little frustrating
+not having complete, 100% control over everything you do in a project (although the tradeoff of not having to worry about the hard stuff, like creating
+a map of the entire world, makes it worth it). I learned that when you play on someone else's court (Google's, for example) you have to play by their 
+rules. I got really good at skimming through the Google Developers documentation to find what I needed.
+    I spent a little bit of time on styling, but look forward to taking a more in-depth look at the UI/UX in the next phase of the project.
+
+URL: http://scriptures.surge.sh
