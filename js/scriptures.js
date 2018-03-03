@@ -52,6 +52,8 @@ const Scriptures = (function () {
     let breadcrumbs;
     let cacheBooks;
     let clearMarkers;
+    let getNextScriptureCallback;
+    let getPreviousScriptureCallback;
     let getScriptureCallback;
     let getScriptureFailed;
     let goHome;
@@ -179,14 +181,26 @@ const Scriptures = (function () {
         
         gmMarkers = [];
     };
-
-    getScriptureCallback = function (chapterHTML) {
-        document.getElementById("scriptures").innerHTML = chapterHTML;
-        document.getElementById("crumb").innerHTML = requestedBreadcrumbs;
+    
+    getNextScriptureCallback = function(chapterHTML) {
+        document.getElementsByClassName("next")[0].innerHTML = chapterHTML;
         document.getElementsByClassName("navheading")[0].innerHTML += nextprev;
         document.getElementsByClassName("navheading")[1].innerHTML += nextprev;
-        
-        setupMarkers();        
+        document.getElementsByClassName("navheading")[2].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[3].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[4].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[5].innerHTML += nextprev;    
+    }
+    
+    getPreviousScriptureCallback = function(chapterHTML) {
+        document.getElementsByClassName("previous")[0].innerHTML = chapterHTML;
+    }
+
+    getScriptureCallback = function (chapterHTML) {
+        document.getElementsByClassName("current")[0].innerHTML = chapterHTML;
+        document.getElementById("crumb").innerHTML = requestedBreadcrumbs;
+
+        setupMarkers();
     };
 
     getScriptureFailed = function () {
@@ -214,7 +228,7 @@ const Scriptures = (function () {
 
         navContents += "<br /><br /></div>";
 
-        document.getElementById("scriptures").innerHTML = navContents;
+        document.getElementsByClassName("current")[0].innerHTML = navContents;
         document.getElementById("crumb").innerHTML = breadcrumbs(displayedVolume);
     };
 
@@ -230,7 +244,7 @@ const Scriptures = (function () {
 
             navContents += "<br /><br /></div></div>"
 
-            document.getElementById("scriptures").innerHTML = navContents;
+            document.getElementsByClassName("current")[0].innerHTML = navContents;
         } else {
             goToChapter(bookId, 0);
         }
@@ -241,27 +255,35 @@ const Scriptures = (function () {
         if (bookId !== undefined) {
             let book = books[bookId];
             let nextChapterInfo = nextChapter(bookId, chapter);
+            let nextChapterContent = "";
             let nextHTML = "";
             let previousChapterInfo = previousChapter(bookId, chapter);
+            let previousChapterContent = "";
             let previousHTML = "";
             let volume = volumes[book.parentBookId - 1];
 
             requestedBreadcrumbs = breadcrumbs(volume, book, chapter);
-            
-            if (previousChapterInfo) {
-                previousHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + previousChapterInfo[0] + ", " + previousChapterInfo[1] + ")\" title=\"" + previousChapterInfo[2] + "\"><i class=\"material-icons\">skip_previous</i></a>";
-            }
-            if (nextChapterInfo) {
-                nextHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + nextChapterInfo[0] + ", " + nextChapterInfo[1] + ")\" title=\"" + nextChapterInfo[2] + "\"><i class=\"material-icons\">skip_next</i></a>";
-            }
-            nextprev = "<div class=\"nextprev\">" + previousHTML + nextHTML + "</div>";
 
             ajax(urlParams(bookId, chapter), getScriptureCallback, getScriptureFailed, true);
+            
+            if (previousChapterInfo) {
+                previousHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + previousChapterInfo[0] + ", " + previousChapterInfo[1] + ", " + true + ", " + false + ")\" title=\"" + previousChapterInfo[2] + "\"><i class=\"material-icons\">skip_previous</i></a>";
+                previousChapterContent = ajax(urlParams(previousChapterInfo[0], previousChapterInfo[1]), getPreviousScriptureCallback, getScriptureFailed, true);                
+            } else {
+                document.getElementsByClassName("previous")[0].innerHTML = "";                
+            }
+            if (nextChapterInfo) {
+                nextHTML = "<a href=\"javascript:void(0);\" onclick=\"Scriptures.hash(0, " + nextChapterInfo[0] + ", " + nextChapterInfo[1] + ", " + false + ", " + true + ")\" title=\"" + nextChapterInfo[2] + "\"><i class=\"material-icons\">skip_next</i></a>";
+                nextChapterContent = ajax(urlParams(nextChapterInfo[0], nextChapterInfo[1]), getNextScriptureCallback, getScriptureFailed, true);
+            } else {
+                document.getElementsByClassName("next")[0].innerHTML = "";
+            }
+            nextprev = "<div class=\"nextprev\">" + previousHTML + nextHTML + "</div>";
         }
 
     };
     
-    hash = function (volumeId, bookId, chapter) {
+    hash = function (volumeId, bookId, chapter, prev, next) {
         let newHash = "";
         
         if (volumeId !== undefined) {
@@ -274,6 +296,36 @@ const Scriptures = (function () {
                     newHash += ":" + chapter;
                 }
             }
+        }
+        
+        if (next) {
+            let arr = [];
+            arr[0] = document.getElementById("first").classList[1];
+            arr[1] = document.getElementById("second").classList[1];
+            arr[2] = document.getElementById("third").classList[1];
+            
+            document.getElementById("first").classList.remove(arr[0]);
+            document.getElementById("second").classList.remove(arr[1]);
+            document.getElementById("third").classList.remove(arr[2]);
+            
+            document.getElementById("first").classList.add(arr[2]);
+            document.getElementById("second").classList.add(arr[0]);
+            document.getElementById("third").classList.add(arr[1]);
+        }
+        
+        if (prev) {
+            let arr = [];
+            arr[0] = document.getElementById("first").classList[1];
+            arr[1] = document.getElementById("second").classList[1];
+            arr[2] = document.getElementById("third").classList[1];
+
+            document.getElementById("first").classList.remove(arr[0]);
+            document.getElementById("second").classList.remove(arr[1]);
+            document.getElementById("third").classList.remove(arr[2]);
+            
+            document.getElementById("first").classList.add(arr[1]);
+            document.getElementById("second").classList.add(arr[2]);
+            document.getElementById("third").classList.add(arr[0]);
         }
         
         location.hash = newHash;
@@ -417,7 +469,7 @@ const Scriptures = (function () {
         
         let matches;
         
-        document.querySelectorAll("a[onclick^=\"showLocation(\"]").forEach(function (element) {
+        document.querySelectorAll(".current a[onclick^=\"showLocation(\"]").forEach(function (element) {
             let value = element.getAttribute("onclick");
             
             matches = LAT_LON_PARSER.exec(value);
