@@ -183,13 +183,7 @@ const Scriptures = (function () {
     };
     
     getNextScriptureCallback = function(chapterHTML) {
-        document.getElementsByClassName("next")[0].innerHTML = chapterHTML;
-        document.getElementsByClassName("navheading")[0].innerHTML += nextprev;
-        document.getElementsByClassName("navheading")[1].innerHTML += nextprev;
-        document.getElementsByClassName("navheading")[2].innerHTML += nextprev;
-        document.getElementsByClassName("navheading")[3].innerHTML += nextprev;
-        document.getElementsByClassName("navheading")[4].innerHTML += nextprev;
-        document.getElementsByClassName("navheading")[5].innerHTML += nextprev;    
+        document.getElementsByClassName("next")[0].innerHTML = chapterHTML;  
     }
     
     getPreviousScriptureCallback = function(chapterHTML) {
@@ -394,6 +388,9 @@ const Scriptures = (function () {
         }
 
         if (ids.length <= 0) {
+            document.getElementsByClassName("current")[0].setAttribute("name", "");
+            void document.getElementsByClassName("current")[0].offsetWidth;
+            document.getElementsByClassName("current")[0].setAttribute("name", "fade");
             // Go to the homepage if no book or volume is specified
             goHome();
         } else if (ids.length === 1) {
@@ -402,10 +399,16 @@ const Scriptures = (function () {
             if (volumeId < volumes[0].id || volumeId > volumes[volumes.length - 1].id) {
                 goHome();
             } else {
+                document.getElementsByClassName("current")[0].setAttribute("name", "");
+                void document.getElementsByClassName("current")[0].offsetWidth;
+                document.getElementsByClassName("current")[0].setAttribute("name", "fade");
                 // Display volume - list of books
                 goHome(volumeId);
             }
         } else if (ids.length === 2) {
+            document.getElementsByClassName("current")[0].setAttribute("name", "");
+            void document.getElementsByClassName("current")[0].offsetWidth;
+            document.getElementsByClassName("current")[0].setAttribute("name", "fade");
             // Display book - list of chapters
             bookId = Number(ids[1]);
             if (books[bookId] === undefined) {
@@ -415,6 +418,7 @@ const Scriptures = (function () {
             }
         } else {
             // Display chapter contents
+            document.getElementsByClassName("current")[0].setAttribute("name", "");
             bookId = Number(ids[1]);
             chapter = Number(ids[2]);
 
@@ -500,6 +504,13 @@ const Scriptures = (function () {
                 map.setZoom(15);
             }
         }
+        
+        document.getElementsByClassName("navheading")[0].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[1].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[2].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[3].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[4].innerHTML += nextprev;
+        document.getElementsByClassName("navheading")[5].innerHTML += nextprev;  
     };
 
     titleForBookChapter = function (book, chapter) {

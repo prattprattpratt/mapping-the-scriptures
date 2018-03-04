@@ -1,3 +1,24 @@
+URL: http://scriptures.surge.sh
+
+
+<==========PROJECT 1b==========>
+    I actually had a really cool experience doing this part of the project. I am a front-end developer by choice, having done back-end and
+decided it was definitely not for me. I like designing and building things that I can actually see. Imagine my surprise when, whilst 
+trying to figure out how to get my divs to slide correctly, I found myself deep inside the Chrome inspector, stepping into each 
+function and mapping out each ajax call and hash change. I literally had a pen and paper out, drawing out a map of my project. I had a
+FUN time doing this project, which I can honestly say isn't a regular occurence at school.
+    I found it interesting that, although I had made the first part of the project myself, I really had no idea what was going on until I 
+sat down in the Chrome inspector and studied it. Part of it was due to the fact that I relied heavily on the videos to complete Part 1
+but I also think that we often make things without taking the time to really understand what's going on. It's a lot more exciting (not
+to mention easier) to work on a project that you know inside and out.
+    My wife suggested I add the ability to click on a place name inside the map and go to a page listing all of the scriptures with
+references to that place. I thought this was a really cool idea, and one I never would have thought of because I have been focused on 
+assignment requirements. That's why I think it's important to validate with people who aren't familiar with your projects - they see
+things from a different perspective.
+
+
+<==========PROJECT 1a==========>
+
 Create a README that documents your learning experience and tells me what you've accomplished.  If you put your project on a web server, include the
 URL in your README.
 
@@ -6,5 +27,3 @@ not having complete, 100% control over everything you do in a project (although 
 a map of the entire world, makes it worth it). I learned that when you play on someone else's court (Google's, for example) you have to play by their 
 rules. I got really good at skimming through the Google Developers documentation to find what I needed.
     I spent a little bit of time on styling, but look forward to taking a more in-depth look at the UI/UX in the next phase of the project.
-
-URL: http://scriptures.surge.sh

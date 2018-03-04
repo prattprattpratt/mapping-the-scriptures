@@ -82,7 +82,7 @@ div.subtitle {
 
 #scriptures {
     position: relative;
-    min-width: 220px;
+    min-width: 280px;
     max-width: 440px;
     flex: 1 1 30%;
 }
@@ -103,8 +103,8 @@ div.subtitle {
     .scriptureDiv.next, .scriptureDiv.previous {
         z-index: -1;
     }
-    .scriptureDiv.next { right: -400px; left: 400px !important; }
-    .scriptureDiv.previous { left: -400px; right: 400px !important; }
+    .scriptureDiv.next { right: -800px; left: 800px !important; }
+    .scriptureDiv.previous { left: -800px; right: 800px !important; }
     .current { left: 0; right: 0; }
 
 #scripnav {
@@ -303,4 +303,24 @@ span.verse {
 
 li.match {
     background-color: #ffffcc;
+}
+
+@media screen and (max-width: 640px) {
+    #content {
+        flex-direction: column-reverse;
+    }
+    
+    #scriptures {
+        min-width: 100%;
+        max-width: 100%;
+    }
+}
+
+@keyframes fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+[name^="fade"] {
+    animation: fade .6s;
 }
